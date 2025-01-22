@@ -1,0 +1,49 @@
+name: postgres-ip-whitelist
+
+on: 
+  workflow_dispatch:
+  #  input:
+  #   Firewall-Name:
+  #    description: 'firewall rule name'
+  #    required: true
+  #    type: string
+  #    default: x x x x 
+
+  #   Start_IP_Address:
+  #    description: 'Provide your IPv4 or IPv6 address/range'
+  #    required: true
+  #    type: string
+  #    default: x x x x 
+
+  #   End_IP_Address:
+  #    description: 'Provide your IPv4 or IPv6 address/range'
+  #    required: true
+  #    type: string
+  #    default: x x x x 
+
+permissions:
+   id-token: write
+   contents: write
+
+jobs:
+   postgres_ip:
+     runs-on: ubuntu-latest
+     steps:
+     - name: checkout repository
+       uses: actions/checkout@v4
+
+    - name: Install Azure cli        
+      run: |
+            sudo apt-get install ca-certificates curl apt-transport-https lsb-release gnupg
+            curl -sL https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor | sudo tee /etc/apt/trusted.gpg.d/microsoft.gpg > /dev/null
+            AZ_REPO=$(lsb_release -cs)
+            echo "deb [arch=amd64] https://packages.microsoft.com/repos/azure-cli/ $AZ_REPO main" | sudo tee /etc/apt/sources.list.d/azure-cli.list
+            sudo apt-get update
+            sudo apt-get install azure-cli       
+
+    - name: Azure Login
+      uses: azure/login@v2
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}          
+
+
